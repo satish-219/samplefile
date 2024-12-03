@@ -1,0 +1,33 @@
+version: 0.2
+
+phases:
+  install:
+    runtime-versions:
+      python: 3.9
+    commands:
+      - echo "Uninstalling any existing pytest version..."
+      - pip uninstall -y pytest  # Uninstall pytest if already installed
+      - echo "Installing pytest version 6.2.5..."
+      - pip install pytest==6.2.5  # Install pytest version 6.2.5
+      - echo "Installing Python dependencies..."
+      - pip install -r requirements.txt
+
+  pre_build:
+    commands:
+      - echo "Running tests..."
+      - pytest
+
+  build:
+    commands:
+      - echo "Building the application..."
+      - python setup.py build
+
+  post_build:
+    commands:
+      - echo "Build complete. Packaging artifacts..."
+      - aws s3 cp requirements.txt s3://buildspec-file/requirements.txt  
+
+artifacts:
+  files:
+    - '**/*'
+
